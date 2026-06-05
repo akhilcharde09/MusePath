@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MusePath – Technical Project Guide</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Bebas+Neue&family=Fira+Code:wght@400;500&display=swap');
+    
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Montserrat', sans-serif;
+      color: #1a1a1a;
+      background: #ffffff;
+      line-height: 1.6;
+      margin: 0;
+      padding: 40px;
+      font-size: 14px;
+    }
+    
+    header {
+      border-bottom: 3px solid #000000;
+      padding-bottom: 20px;
+      margin-bottom: 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+    
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .logo-m {
+      width: 36px;
+      height: 36px;
+      border: 3px solid #000000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 900;
+    }
+    
+    .logo-text {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin: 0;
+    }
+    
+    .header-doc-title {
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: #666666;
+    }
+    
+    h1, h2, h3, h4 {
+      font-family: 'Bebas Neue', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #000000;
+    }
+    
+    h1 {
+      font-size: 42px;
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+    
+    .subtitle {
+      font-size: 16px;
+      font-weight: 600;
+      color: #555555;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 40px;
+    }
+    
+    h2 {
+      font-size: 26px;
+      border-bottom: 2px solid #eaeaea;
+      padding-bottom: 6px;
+      margin-top: 40px;
+      margin-bottom: 20px;
+      page-break-after: avoid;
+    }
+    
+    h3 {
+      font-size: 20px;
+      margin-top: 25px;
+      margin-bottom: 10px;
+      color: #333333;
+      page-break-after: avoid;
+    }
+    
+    p {
+      margin-top: 0;
+      margin-bottom: 15px;
+      text-align: justify;
+    }
+    
+    ul, ol {
+      margin-top: 0;
+      margin-bottom: 20px;
+      padding-left: 20px;
+    }
+    
+    li {
+      margin-bottom: 6px;
+    }
+    
+    code {
+      font-family: 'Fira Code', monospace;
+      background: #f4f4f4;
+      padding: 2px 6px;
+      font-size: 13px;
+      border-radius: 3px;
+      color: #d11a2a;
+    }
+    
+    pre {
+      font-family: 'Fira Code', monospace;
+      background: #111111;
+      color: #f8f8f2;
+      padding: 15px;
+      border-radius: 4px;
+      overflow-x: auto;
+      margin-top: 15px;
+      margin-bottom: 20px;
+      font-size: 12px;
+      line-height: 1.5;
+      border-left: 4px solid #ffffff;
+      page-break-inside: avoid;
+    }
+    
+    .diagram-box {
+      background: #f9f9f9;
+      border: 1px solid #ddd;
+      padding: 20px;
+      margin: 20px 0;
+      font-family: monospace;
+      white-space: pre;
+      line-height: 1.2;
+      font-size: 11px;
+      overflow-x: auto;
+      page-break-inside: avoid;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 30px;
+      page-break-inside: avoid;
+    }
+    
+    th, td {
+      border: 1px solid #dddddd;
+      padding: 10px 12px;
+      text-align: left;
+    }
+    
+    th {
+      background: #000000;
+      color: #ffffff;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 14px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    
+    tr:nth-child(even) td {
+      background: #f9f9f9;
+    }
+    
+    .interview-card {
+      background: #fcfcfc;
+      border-left: 4px solid #000000;
+      padding: 15px 20px;
+      margin-bottom: 25px;
+      page-break-inside: avoid;
+    }
+    
+    .question {
+      font-weight: 700;
+      font-size: 14px;
+      color: #000000;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    
+    .answer {
+      font-size: 13.5px;
+      color: #333333;
+    }
+    
+    .answer strong {
+      color: #000000;
+    }
+    
+    @media print {
+      body {
+        padding: 0;
+        font-size: 12px;
+      }
+      
+      h2 {
+        margin-top: 30px;
+      }
+      
+      .page-break {
+        page-break-before: always;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo-container">
+      <div class="logo-m">M</div>
+      <h1 class="logo-text">MusePath</h1>
+    </div>
+    <div class="header-doc-title">Interview Technical Dossier</div>
+  </header>
+
+  <h1>MUSEPATH: AI-Powered Music Planner</h1>
+  <div class="subtitle">Full Technical Guide & Architectural Overview</div>
+
+  <h2>1. Executive Summary & Project Scope</h2>
+  <p>
+    <strong>MusePath</strong> is a specialized, interactive web application designed for self-directed musicians who want customized, AI-generated practice roadmaps. Standard music planning software often relies on generic curriculum paths that fail to account for a user's unique interests, specific practice time, current proficiency level, and musical mood.
+  </p>
+  <p>
+    By integrating Google's <strong>Gemini Generative AI</strong> API with a structured database and raw, modern design principles, MusePath generates highly tailored music plans in seconds. Additionally, the application features gamified XP progress tracking, song search and tutorial lookups, and specialized frontend experiences—including a custom <strong>3D frequency terrain visualizer</strong> and a <strong>Web Audio electric guitar distortion synthesizer</strong> to create an engaging, premium user journey.
+  </p>
+
+  <h3>Key Features Covered:</h3>
+  <ul>
+    <li><strong>AI Planning Engine</strong>: Structured multi-month, multi-week learning roadmaps generated via Gemini Pro using strict JSON structures.</li>
+    <li><strong>Active Plan Switcher</strong>: Support for maintaining, generating, and switching between multiple custom plans.</li>
+    <li><strong>3D Graphics Visualizer</strong>: An interactive, high-performance frequency terrain drawn directly on HTML5 Canvas using projected 3D coordinates.</li>
+    <li><strong>Custom Sound Synth</strong>: Built-in guitar synth utilizing Web Audio API nodes, low-pass speaker cabinet filters, and waveshaper distortion curve algorithms.</li>
+    <li><strong>Full Device Compatibility</strong>: Stateful hamburger navigation, overlays, and typography scaling (using CSS clamp) fully optimized for all viewports.</li>
+  </ul>
+
+  <h2>2. System Architecture & Data Flow</h2>
+  <p>
+    The application follows a decoupled client-server architecture with a relational backend:
+  </p>
+  
+  <div class="diagram-box">
++------------------------------------------------------------------------------------------------+
+|                                  CLIENT (React.js + Vite + Zustand)                            |
+|  +--------------------+   +-----------------------+   +-------------------+   +-------------+  |
+|  |   Pages / Views    |   | 3D Visualizer Canvas  |   | Web Audio Synth   |   | Zustand     |  |
+|  | Dashboard / Plan   |   | Frequency Terrain     |   | Distortion Synth  |   | Store       |  |
+|  +---------+----------+   +-----------+-----------+   +---------+---------+   +------+------+  |
++------------|--------------------------|-------------------------|--------------------|---------+
+             | REST Requests            | Keyboard Triggers       | Distorted Chord    | User State
+             v                          v                         v                    v
++------------|--------------------------|-------------------------|--------------------|---------+
+|            |                          v                         |                    |         |
+|            |                [ Browser Web Audio Context ]        |                    |         |
+|            v                                                    |                    |         |
+|    +-------+--------+                                           |                    |         |
+|    |  Express API   | <=========================================+                    |         |
+|    |  (Node.js)     |                                                                |         |
+|    +---+--------+---+                                                                |         |
+|        |        |                                                                    |         |
+|        |        +----------------------------------------+                           |         |
+|        | API Request                                     | DB Queries                |         |
+|        v                                                 v                           v         |
+|  +-----+---------------+                       +---------+---------+        +--------+------+  |
+|  | Google Gemini AI    |                       |    Supabase DB    | <====> | Supabase Auth |  |
+|  | JSON Generation     |                       |    PostgreSQL     |        | (GoTrue App)  |  |
+|  +---------------------+                       +-------------------+        +---------------+  |
++------------------------------------------------------------------------------------------------+
+  </div>
+
+  <div class="page-break"></div>
+
+  <h2>3. Database Design & Supabase Schema</h2>
+  <p>
+    The database is hosted on <strong>Supabase (PostgreSQL)</strong>, leveraging core features such as Row Level Security (RLS) and custom triggers to automatically link authenticated users to profile profiles.
+  </p>
+
+  <h3>Database Tables Entity Summary</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Table Name</th>
+        <th>Primary Keys / Foreign Keys</th>
+        <th>Key Fields & Types</th>
+        <th>Purpose / Role</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>users</strong></td>
+        <td><code>id</code> (PK, UUID -> auth.users)</td>
+        <td><code>email</code>, <code>streak_days</code>, <code>xp</code>, <code>instrument</code>, <code>skill_level</code></td>
+        <td>Stores profile status, streaks, total practice minutes, and gamification level metrics.</td>
+      </tr>
+      <tr>
+        <td><strong>learning_plans</strong></td>
+        <td><code>id</code> (PK), <code>user_id</code> (FK)</td>
+        <td><code>title</code>, <code>instrument</code>, <code>plan_data</code> (JSONB), <code>is_active</code> (Boolean)</td>
+        <td>Maintains custom curriculum plans. Multiple plans can exist per user, but only one is <code>is_active = true</code>.</td>
+      </tr>
+      <tr>
+        <td><strong>learning_weeks</strong></td>
+        <td><code>id</code> (PK), <code>plan_id</code> (FK), <code>user_id</code> (FK)</td>
+        <td><code>week_number</code>, <code>title</code>, <code>topics</code> (Text[]), <code>is_completed</code> (Boolean)</td>
+        <td>Normalized breakdown of weekly learning milestones, checklist topics, and youtube search metadata.</td>
+      </tr>
+      <tr>
+        <td><strong>progress</strong></td>
+        <td><code>id</code> (PK), <code>user_id</code> (FK), <code>plan_id</code> (FK)</td>
+        <td><code>completed_weeks</code>, <code>total_weeks</code>, <code>completion_percentage</code></td>
+        <td>Tracks overall completion percentage of the active roadmap.</td>
+      </tr>
+      <tr>
+        <td><strong>practice_logs</strong></td>
+        <td><code>id</code> (PK), <code>user_id</code> (FK), <code>plan_id</code> (FK)</td>
+        <td><code>duration_minutes</code>, <code>notes</code>, <code>practiced_at</code> (Timestamp)</td>
+        <td>Maintains history logs of when and how long the user practiced. Displays on the dashboard heatmaps.</td>
+      </tr>
+      <tr>
+        <td><strong>saved_songs</strong></td>
+        <td><code>id</code> (PK), <code>user_id</code> (FK)</td>
+        <td><code>song_title</code>, <code>song_artist</code>, <code>difficulty</code>, <code>spotify_id</code></td>
+        <td>Songs that the user saved from the discovery page.</td>
+      </tr>
+      <tr>
+        <td><strong>achievements</strong></td>
+        <td><code>id</code> (PK), <code>user_id</code> (FK)</td>
+        <td><code>achievement_key</code>, <code>title</code>, <code>description</code>, <code>earned_at</code></td>
+        <td>Gamified badges awarded dynamically (e.g. creating first plan, logging practice).</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>4. Core Technical Implementations</h2>
+
+  <h3>A. Speed-Optimized Asynchronous API Flow</h3>
+  <p>
+    Generating multi-month plans requires writing detailed schemas, which took upwards of 15 seconds due to Spotify's metadata search rate limits and network connection limits.
+  </p>
+  <p>
+    <strong>The Optimization</strong>: The API was restructured to decouple the plan generation from metadata enrichment. The server invokes Gemini to generate the plan layout, inserts the raw plan details into Supabase, and immediately returns the JSON plan data to the frontend in under 5 seconds. Right after returning, a background task (<code>setTimeout</code>) triggers the Spotify API search queries concurrently and updates the database row asynchronously. The frontend UI seamlessly retrieves artwork and preview audio on sub-sequent route fetches without blocking page loads.
+  </p>
+
+  <h3>B. Web Audio API Distorted Guitar Synth</h3>
+  <p>
+    To create the heavy metal audio experience, a Web Audio synthesizer was engineered. The synth stacks multiple detuned sawtooth oscillators to create a thick sound wave, passes the output through a custom Waveshaper distortion node, and shapes the tone using peaking and cabinet low-pass filters:
+  </p>
+  <pre>// Stacked Oscillators => Waveshaper Distortion => Cabinet Filter => Destination
+const synthChord = (ctx) => {
+  const osc1 = ctx.createOscillator();
+  const osc2 = ctx.createOscillator();
+  const distortion = ctx.createWaveShaper();
+  const filter = ctx.createBiquadFilter();
+
+  // Custom Float32 array representing clipping curve
+  distortion.curve = makeDistortionCurve(400); 
+  distortion.oversample = '4x';
+
+  // Lower frequencies to emulate a speaker cabinet response
+  filter.type = 'lowpass';
+  filter.frequency.value = 2500; 
+
+  osc1.type = 'sawtooth'; osc1.frequency.value = 82.41; // Low E
+  osc2.type = 'sawtooth'; osc2.frequency.value = 123.47; // B (Fifth)
+  osc2.detune.value = 8; // Rich chorus effect
+
+  osc1.connect(distortion);
+  osc2.connect(distortion);
+  distortion.connect(filter);
+  filter.connect(ctx.destination);
+};</pre>
+
+  <div class="page-break"></div>
+
+  <h3>C. 3D Frequency Visualizer</h3>
+  <p>
+    Instead of standard libraries, the 3D visualizer renders a stark monochrome terrain on an HTML5 canvas:
+  </p>
+  <ul>
+    <li>Creates a grid of 3D coordinates <code>(x, y, z)</code>.</li>
+    <li>Dynamically sets height <code>z</code> using frequency bins fetched from an audio analyzer.</li>
+    <li>Projects 3D points onto a 2D canvas space using perspective scaling: <code>x_projected = center_x + (x * perspective_ratio)</code>.</li>
+    <li>Uses coordinate transformation matrices to rotate the mesh grid in response to user mouse movements.</li>
+  </ul>
+
+  <h2>5. High-Scoring Interview Questions & Answers</h2>
+  
+  <div class="interview-card">
+    <div class="question">Q1: How does the plan switching mechanism maintain state integrity?</div>
+    <div class="answer">
+      <strong>Answer:</strong> The learning plans use a binary <code>is_active</code> status column. When a user requests to switch their active roadmap, the database receives a request to set <code>is_active = false</code> for all plans belonging to that <code>userId</code>, and subsequently sets <code>is_active = true</code> for the selected plan. Additionally, the user's base instrument and skill level parameters in the <code>users</code> table are automatically synchronized to match the newly activated plan, triggering instant, reactive updates to the dashboard statistics, heatmaps, and video recommendations.
+    </div>
+  </div>
+
+  <div class="interview-card">
+    <div class="question">Q2: Why did you opt for a background Spotify lookup, and how does it prevent database conflicts?</div>
+    <div class="answer">
+      <strong>Answer:</strong> Fetching metadata for up to 96 songs synchronously during plan generation took 15+ seconds, hitting rate limits and causing API timeouts. By moving it to a background execution flow, we return the plan structure generated by Gemini in 4 seconds. In the background, the server asynchronously queries Spotify and saves the updated JSONB data to the database using Supabase's optimistic updates. If a user views the plan before enrichment completes, the app displays a default musical icon fallback, which upgrades to album art as soon as the background task updates the row.
+    </div>
+  </div>
+
+  <div class="interview-card">
+    <div class="question">Q3: How did you ensure typography scales cleanly on various devices?</div>
+    <div class="answer">
+      <strong>Answer:</strong> Standard pixel-based sizing caused large Bebas Neue display titles to wrap line-by-line on mobile screens. I replaced static heading sizing with the CSS <code>clamp()</code> function (e.g. <code>clamp(1.75rem, 5vw, 3.5rem)</code>). This establishes a responsive range that adapts dynamically based on the viewport width, maintaining a readable scale on small devices while rendering large editorial headlines on desktop monitors.
+    </div>
+  </div>
+
+  <div class="interview-card">
+    <div class="question">Q4: How does the custom Web Audio synthesizer produce a distorted sound?</div>
+    <div class="answer">
+      <strong>Answer:</strong> The synthesizer uses a <code>WaveShaperNode</code> to apply non-linear distortion. We populate a <code>Float32Array</code> clipping curve using a mathematical formula: <code>f(x) = (3 + k)x / (3 + k|x|)</code>, where <code>k</code> is the distortion level. When sound waves pass through, their peaks are clipped, generating high-frequency harmonics (distortion). Stacking detuned sawtooth oscillators adds a thick, chorused tone, and a <code>BiquadFilterNode</code> configured as a low-pass filter simulates the cabinet speaker roll-off above 2.5 kHz to keep the high-frequency harmonics from sounding harsh.
+    </div>
+  </div>
+
+</body>
+</html>
