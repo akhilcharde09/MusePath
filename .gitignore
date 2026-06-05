@@ -42,3 +42,6 @@ Thumbs.db
 dist/
 build/
 *.class
+*.zip
+*.jar
+!backend/pom.xml
