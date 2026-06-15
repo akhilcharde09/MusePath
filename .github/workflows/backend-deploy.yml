@@ -6,7 +6,7 @@ on:
     paths:
       - 'backend/**'
       - '.github/workflows/backend-deploy.yml'
-  workflow_dispatch:  # Allow manual trigger from GitHub Actions UI
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # ─── Checkout ───────────────────────────────────────────────────────────
+      # ─── Checkout ────────────────────────────────────────────────────────────
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -27,34 +27,44 @@ jobs:
           cache: maven
 
       # ─── Build fat JAR ───────────────────────────────────────────────────────
-      - name: Build fat JAR (skip tests for speed)
+      - name: Build fat JAR (skip tests)
         run: mvn package -DskipTests --no-transfer-progress
         working-directory: backend
 
-      # ─── Rename JAR for easy reference ───────────────────────────────────────
-      - name: Locate & rename JAR
+      # ─── Rename JAR to app.jar ───────────────────────────────────────────────
+      - name: Rename JAR to app.jar
         run: |
           JAR=$(find backend/target -name "*.jar" ! -name "*sources*" ! -name "*javadoc*" | head -1)
           echo "Found JAR: $JAR"
           cp "$JAR" backend/target/app.jar
 
+      # ─── Login to Azure via Service Principal ────────────────────────────────
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
       # ─── Deploy to Azure App Service ─────────────────────────────────────────
-      - name: Deploy to Azure App Service
+      - name: Deploy JAR to Azure App Service
         uses: azure/webapps-deploy@v3
         with:
-          app-name: musepath-api           # ← Change to your Azure App Service name
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          app-name: musepath-api        # ← must match your Azure App Service name exactly
           package: backend/target/app.jar
 
-      # ─── Post-deploy health check ─────────────────────────────────────────────
+      # ─── Logout ──────────────────────────────────────────────────────────────
+      - name: Logout from Azure
+        run: az logout
+        if: always()
+
+      # ─── Health Check ─────────────────────────────────────────────────────────
       - name: Health check
         run: |
-          echo "Waiting 30s for app to start..."
-          sleep 30
+          echo "Waiting 40s for app to boot..."
+          sleep 40
           STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://musepath-api.azurewebsites.net/health || echo "000")
-          echo "Health check status: $STATUS"
+          echo "Health check HTTP status: $STATUS"
           if [ "$STATUS" = "200" ]; then
-            echo "✅ Backend is healthy!"
+            echo "✅ Backend is live and healthy!"
           else
-            echo "⚠️ Health check returned $STATUS — app may still be starting up."
+            echo "⚠️ Got $STATUS — app may still be warming up. Check Azure Log Stream."
           fi
