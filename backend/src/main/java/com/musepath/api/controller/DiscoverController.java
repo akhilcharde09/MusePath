@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 @RestController
 public class DiscoverController {
@@ -51,56 +50,52 @@ public class DiscoverController {
                 // Call Gemini for recommendation JSON array
                 JsonNode geminiRecs = geminiService.generateSongRecommendations(instrument, level, mood, genre, limit);
                 System.out.println("🤖 Gemini successfully recommended songs. Enriching with Spotify details...");
+                System.out.println("📊 Gemini returned node type: " + (geminiRecs.isArray() ? "ARRAY(" + geminiRecs.size() + ")" : "OBJECT/OTHER: " + geminiRecs.getNodeType()));
 
                 if (geminiRecs.isArray()) {
-                    List<CompletableFuture<Map<String, Object>>> enrichmentFutures = new ArrayList<>();
-
                     for (JsonNode songNode : geminiRecs) {
                         String title = songNode.path("title").asText("");
                         String artist = songNode.path("artist").asText("");
-                        
-                        CompletableFuture<Map<String, Object>> future = CompletableFuture.supplyAsync(() -> {
-                            Map<String, Object> songMap = new HashMap<>();
-                            songMap.put("title", title);
-                            songMap.put("artist", artist);
-                            songMap.put("difficulty", songNode.path("difficulty").asText(level));
-                            songMap.put("whyRecommended", songNode.path("whyRecommended").asText(""));
-                            
-                            List<String> skillsList = new ArrayList<>();
-                            JsonNode skills = songNode.path("skillsLearned");
-                            if (skills.isArray()) {
-                                for (JsonNode s : skills) skillsList.add(s.asText());
-                            }
-                            songMap.put("skillsLearned", skillsList);
-                            songMap.put("genre", songNode.path("genre").asText(genre));
-                            songMap.put("mood", songNode.path("mood").asText(mood));
-                            songMap.put("estimatedLearningTime", songNode.path("estimatedLearningTime").asText("1-2 weeks"));
-                            songMap.put("funFact", songNode.path("funFact").asText(""));
 
-                            // Enrich with Spotify
-                            if (!title.isEmpty() && !artist.isEmpty()) {
+                        // Build base song map from Gemini data - always added regardless of Spotify
+                        Map<String, Object> songMap = new HashMap<>();
+                        songMap.put("title", title);
+                        songMap.put("artist", artist);
+                        songMap.put("difficulty", songNode.path("difficulty").asText(level));
+                        songMap.put("whyRecommended", songNode.path("whyRecommended").asText(""));
+
+                        List<String> skillsList = new ArrayList<>();
+                        JsonNode skills = songNode.path("skillsLearned");
+                        if (skills.isArray()) {
+                            for (JsonNode s : skills) skillsList.add(s.asText());
+                        }
+                        songMap.put("skillsLearned", skillsList);
+                        songMap.put("genre", songNode.path("genre").asText(genre));
+                        songMap.put("mood", songNode.path("mood").asText(mood));
+                        songMap.put("estimatedLearningTime", songNode.path("estimatedLearningTime").asText("1-2 weeks"));
+                        songMap.put("funFact", songNode.path("funFact").asText(""));
+                        // Defaults so frontend never gets null fields
+                        songMap.put("spotify_url", "");
+                        songMap.put("preview_url", "");
+                        songMap.put("album_art", "");
+                        songMap.put("spotify_id", "");
+
+                        // Best-effort Spotify enrichment — never blocks song from being returned
+                        if (!title.isEmpty() && !artist.isEmpty()) {
+                            try {
                                 Map<String, Object> spotifyDetails = spotifyService.searchSpotifyTrack(title, artist);
                                 if (spotifyDetails != null) {
-                                    Map<String, Object> editableMap = new HashMap<>(songMap);
-                                    editableMap.putAll(spotifyDetails);
-                                    return editableMap;
+                                    songMap.putAll(spotifyDetails);
+                                    System.out.println("✅ Spotify enriched: " + title);
+                                } else {
+                                    System.out.println("ℹ️ No Spotify match for: " + title);
                                 }
+                            } catch (Exception spotifyErr) {
+                                System.err.println("⚠️ Spotify enrichment failed for \"" + title + "\": " + spotifyErr.getMessage());
                             }
-                            return songMap;
-                        });
-
-                        enrichmentFutures.add(future);
-                    }
-
-                    // Wait for all to complete
-                    CompletableFuture.allOf(enrichmentFutures.toArray(new CompletableFuture[0])).join();
-
-                    for (CompletableFuture<Map<String, Object>> f : enrichmentFutures) {
-                        try {
-                            songsList.add(f.get());
-                        } catch (Exception e) {
-                            // ignore individual fail
                         }
+
+                        songsList.add(songMap);
                     }
                 }
             } catch (Exception geminiErr) {

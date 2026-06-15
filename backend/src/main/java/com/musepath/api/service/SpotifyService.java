@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import javax.net.ssl.SSLContext;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
@@ -28,9 +29,23 @@ public class SpotifyService {
     private String spotifyToken = null;
     private long tokenExpiry = 0;
 
-    private final HttpClient httpClient = HttpClient.newBuilder()
-            .connectTimeout(Duration.ofSeconds(10))
-            .build();
+    private final HttpClient httpClient = buildHttpClient();
+
+    private static HttpClient buildHttpClient() {
+        try {
+            SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
+            sslContext.init(null, null, null);
+            return HttpClient.newBuilder()
+                    .connectTimeout(Duration.ofSeconds(15))
+                    .sslContext(sslContext)
+                    .build();
+        } catch (Exception e) {
+            // Fallback to default if SSLContext init fails
+            return HttpClient.newBuilder()
+                    .connectTimeout(Duration.ofSeconds(15))
+                    .build();
+        }
+    }
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     private synchronized String getSpotifyToken() {

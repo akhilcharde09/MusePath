@@ -2,8 +2,6 @@ package com.musepath.api.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.musepath.api.service.SpotifyService;
-import com.musepath.api.service.SupabaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

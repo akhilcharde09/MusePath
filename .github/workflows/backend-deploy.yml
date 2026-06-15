@@ -1,0 +1,60 @@
+name: Deploy Backend to Azure App Service
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-deploy.yml'
+  workflow_dispatch:  # Allow manual trigger from GitHub Actions UI
+
+jobs:
+  build-and-deploy:
+    name: Build & Deploy Spring Boot to Azure
+    runs-on: ubuntu-latest
+
+    steps:
+      # ─── Checkout ───────────────────────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ─── Java 17 + Maven cache ───────────────────────────────────────────────
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      # ─── Build fat JAR ───────────────────────────────────────────────────────
+      - name: Build fat JAR (skip tests for speed)
+        run: mvn package -DskipTests --no-transfer-progress
+        working-directory: backend
+
+      # ─── Rename JAR for easy reference ───────────────────────────────────────
+      - name: Locate & rename JAR
+        run: |
+          JAR=$(find backend/target -name "*.jar" ! -name "*sources*" ! -name "*javadoc*" | head -1)
+          echo "Found JAR: $JAR"
+          cp "$JAR" backend/target/app.jar
+
+      # ─── Deploy to Azure App Service ─────────────────────────────────────────
+      - name: Deploy to Azure App Service
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: musepath-api           # ← Change to your Azure App Service name
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: backend/target/app.jar
+
+      # ─── Post-deploy health check ─────────────────────────────────────────────
+      - name: Health check
+        run: |
+          echo "Waiting 30s for app to start..."
+          sleep 30
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://musepath-api.azurewebsites.net/health || echo "000")
+          echo "Health check status: $STATUS"
+          if [ "$STATUS" = "200" ]; then
+            echo "✅ Backend is healthy!"
+          else
+            echo "⚠️ Health check returned $STATUS — app may still be starting up."
+          fi

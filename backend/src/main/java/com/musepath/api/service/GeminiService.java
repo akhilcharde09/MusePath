@@ -22,16 +22,15 @@ public class GeminiService {
     /**
      * Model priority list — confirmed available via live API models.list call.
      * Ordered: lightest/cheapest first → most capable last.
-     * gemini-2.5-flash-lite → gemini-2.5-flash → gemini-3.1-flash-lite → gemini-3.5-flash
      *
-     * NOTE: gemini-2.0-flash and gemini-2.0-flash-lite are excluded — they exhaust
-     * free-tier quota fastest. The 2.5/3.x models have separate quota pools.
+     * NOTE: Model availability may change; the fallback logic will skip
+     * any model returning 404 and try the next one automatically.
      */
     private static final String[] MODELS = {
-        "gemini-2.5-flash-lite",   // lightest, fastest
-        "gemini-2.5-flash",        // reliable workhorse
-        "gemini-3.1-flash-lite",   // newer generation fallback
-        "gemini-3.5-flash"         // most capable fallback
+        "gemini-2.0-flash-lite",  // lightest, fastest, lowest quota cost
+        "gemini-2.0-flash",       // reliable workhorse
+        "gemini-1.5-flash",       // stable long-context fallback
+        "gemini-1.5-pro"          // most capable fallback
     };
 
     @Value("${GEMINI_API_KEY:}")
@@ -309,29 +308,55 @@ public class GeminiService {
         Pattern jsonBlock = Pattern.compile("```(?:json)?\\s*([\\s\\S]*?)\\s*```");
         Matcher m = jsonBlock.matcher(text);
         if (m.find()) {
-            try { return objectMapper.readTree(m.group(1).trim()); } catch (Exception ignored) {}
+            try {
+                JsonNode n = objectMapper.readTree(m.group(1).trim());
+                return unwrapIfNeeded(n);
+            } catch (Exception ignored) {}
+        }
+
+        // Try JSON array first (songs endpoint returns [])
+        Pattern arrPat = Pattern.compile("(\\[[\\s\\S]*\\])");
+        m = arrPat.matcher(text);
+        if (m.find()) {
+            try {
+                JsonNode n = objectMapper.readTree(m.group(1).trim());
+                return unwrapIfNeeded(n);
+            } catch (Exception ignored) {}
         }
 
         // Try JSON object
         Pattern objPat = Pattern.compile("(\\{[\\s\\S]*\\})");
         m = objPat.matcher(text);
         if (m.find()) {
-            try { return objectMapper.readTree(m.group(1).trim()); } catch (Exception ignored) {}
-        }
-
-        // Try JSON array
-        Pattern arrPat = Pattern.compile("(\\[[\\s\\S]*\\])");
-        m = arrPat.matcher(text);
-        if (m.find()) {
-            try { return objectMapper.readTree(m.group(1).trim()); } catch (Exception ignored) {}
+            try {
+                JsonNode n = objectMapper.readTree(m.group(1).trim());
+                return unwrapIfNeeded(n);
+            } catch (Exception ignored) {}
         }
 
         // Direct parse
-        try { return objectMapper.readTree(text.trim()); }
-        catch (Exception e) {
+        try {
+            JsonNode n = objectMapper.readTree(text.trim());
+            return unwrapIfNeeded(n);
+        } catch (Exception e) {
             throw new RuntimeException("Cannot parse JSON from Gemini response. Preview: " +
                     text.substring(0, Math.min(200, text.length())), e);
         }
+    }
+
+    /**
+     * If Gemini returns {"songs": [...]} or any single-key object wrapping an array,
+     * unwrap and return the inner array directly.
+     */
+    private JsonNode unwrapIfNeeded(JsonNode node) {
+        if (node.isObject() && node.size() == 1) {
+            JsonNode inner = node.fields().next().getValue();
+            if (inner.isArray()) {
+                System.out.println("🔧 Unwrapped Gemini object wrapper → bare array of " + inner.size() + " items");
+                return inner;
+            }
+        }
+        return node;
     }
 
     // =========================================================

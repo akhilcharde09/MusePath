@@ -18,10 +18,12 @@ public class CorsConfig implements WebMvcConfigurer {
                 .allowedOriginPatterns(
                     "http://localhost:*",
                     "http://127.0.0.1:*",
-                    frontendUrl,     // production frontend (e.g. https://musepath.vercel.app)
+                    frontendUrl,                    // production frontend URL from env
                     "https://*.vercel.app",
                     "https://*.netlify.app",
-                    "https://*.onrender.com"
+                    "https://*.onrender.com",
+                    "https://*.azurewebsites.net",  // Azure App Service
+                    "https://*.azurestaticapps.net" // Azure Static Web Apps
                 )
                 .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
                 .allowedHeaders("*")

@@ -31,7 +31,9 @@ backend/apache-maven-*/
 # ===========================
 .idea/
 *.iml
-.vscode/
+# Allow .vscode/settings.json for Java project detection (fixes 'non-project file' warnings)
+.vscode/*
+!.vscode/settings.json
 .DS_Store
 Thumbs.db
 *.log
